@@ -14,6 +14,9 @@ var direction_timer = 0.0
 # Reference to Player 1
 @onready var player1 = get_node("../Player1")
 
+# Reference to AnimatedSprite3D node
+@onready var animated_sprite = $AnimatedSprite3D
+
 # Get the gravity from the project settings
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
@@ -85,6 +88,10 @@ func _physics_process(delta):
 	# Move the character
 	move_and_slide()
 	
+	# Update animations based on state
+	if animated_sprite:
+		update_animation(input_dir)
+	
 	# AI shooting - shoot randomly when on ground, cooldown ready, and has enough points
 	if is_on_floor() and projectile_cooldown_timer <= 0 and damage_points >= PROJECTILE_COST:
 		if randf() < SHOOT_PROBABILITY:
@@ -131,4 +138,36 @@ func shoot_projectile():
 func earn_points(amount: int):
 	damage_points += amount
 	damage_points = min(damage_points, MAX_POINTS)  # Cap at maximum
+
+func update_animation(input_dir: float):
+	if not animated_sprite:
+		return
+	
+	# Jump states
+	if not is_on_floor():
+		if velocity.y > 0:
+			# Ascending
+			if animated_sprite.animation != "Jump Up":
+				animated_sprite.play("Jump Up")
+		else:
+			# Falling
+			if animated_sprite.animation != "Jump Down":
+				animated_sprite.play("Jump Down")
+		return
+	
+	# Ground movement
+	if input_dir != 0:
+		# Walking
+		if animated_sprite.animation != "Walk":
+			animated_sprite.play("Walk")
+	else:
+		# Idle
+		if animated_sprite.animation != "Idle":
+			animated_sprite.play("Idle")
+	
+	# Always face towards Player 1
+	if player1:
+		# Face left (flip_h = true) when Player 1 is to the left
+		# Face right (flip_h = false) when Player 1 is to the right
+		animated_sprite.flip_h = (player1.global_position.x < global_position.x)
 

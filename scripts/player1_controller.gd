@@ -451,9 +451,13 @@ func update_animation(input_dir: float):
 		else:
 			if animated_sprite.animation != "Walk":
 				animated_sprite.play("Walk")
-		# Flip sprite based on direction
-		animated_sprite.flip_h = (input_dir < 0)
 	else:
 		# Idle
 		if animated_sprite.animation != "Idle":
 			animated_sprite.play("Idle")
+	
+	# Always face towards opponent
+	if opponent:
+		# Face right (flip_h = false) when opponent is to the right
+		# Face left (flip_h = true) when opponent is to the left
+		animated_sprite.flip_h = (opponent.global_position.x < global_position.x)

@@ -1,9 +1,8 @@
-[gd_scene load_steps=39 format=3 uid="uid://btwkdq3fqkkh3"]
+[gd_scene load_steps=38 format=3 uid="uid://btwkdq3fqkkh3"]
 
 [ext_resource type="Script" uid="uid://gmgafm7cyf21" path="res://scripts/player1_controller.gd" id="1_player1"]
 [ext_resource type="Script" uid="uid://ds4qlah4o02cb" path="res://scripts/player2_ai.gd" id="2_player2"]
 [ext_resource type="Texture2D" uid="uid://p381ykxvvurd" path="res://assets/character/vr-vandal/vr-randall-sprite.png" id="2_rarhs"]
-[ext_resource type="Texture2D" uid="uid://cuusmjo2v4kl0" path="res://assets/placeholders/player2_placeholder.svg" id="4_player2_sprite"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(30, 1, 15)
@@ -306,8 +305,10 @@ script = ExtResource("2_player2")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player2"]
 shape = SubResource("BoxShape3D_2")
 
-[node name="Sprite3D" type="Sprite3D" parent="Player2"]
-texture = ExtResource("4_player2_sprite")
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Player2"]
+transform = Transform3D(0.46, 0, 0, 0, 0.46, 0, 0, 0, 0.46, 0, 0.47710228, 0)
+sprite_frames = SubResource("SpriteFrames_pnhog")
+animation = &"Idle"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")
