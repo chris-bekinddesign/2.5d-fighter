@@ -10,9 +10,23 @@ This guide will help you set up GodotMCP in Cursor to enable AI assistance for y
 
 ## Step 1: Install GodotMCP
 
+✅ **Installation Complete!** GodotMCP has been automatically installed in this project.
+
+The installation is located at:
+```
+D:\_LOCAL PROJECTS\Gadot\2.5d-fighter\godot-mcp\
+```
+
+The built file is ready at:
+```
+D:\_LOCAL PROJECTS\Gadot\2.5d-fighter\godot-mcp\build\index.js
+```
+
+If you need to reinstall or update GodotMCP manually:
+
 1. Clone the GodotMCP repository:
    ```bash
-   git clone https://github.com/bradypp/godot-mcp.git
+   git clone https://github.com/bradypp/godot-mcp.git godot-mcp
    cd godot-mcp
    ```
 
@@ -26,45 +40,36 @@ This guide will help you set up GodotMCP in Cursor to enable AI assistance for y
    npm run build
    ```
 
-4. Note the path to the built file. It will be at:
-   ```
-   <godot-mcp-directory>/build/index.js
-   ```
-
 ## Step 2: Configure GodotMCP in Cursor
 
-1. Open Cursor Settings:
-   - Press `Ctrl+,` (or `Cmd+,` on Mac)
-   - Or go to `File → Preferences → Settings`
+✅ **Configuration Complete!** GodotMCP has been automatically configured in your Cursor MCP settings.
 
-2. Navigate to MCP Settings:
-   - Search for "MCP" in the settings search bar
-   - Or go to `Settings → Features → MCP`
+The configuration has been added to:
+```
+C:\Users\chris\.cursor\mcp.json
+```
 
-3. Add GodotMCP Server:
-   - Click on `+ Add New MCP Server`
-   - Fill in the following details:
-     - **Name:** `godot`
-     - **Type:** `command`
-     - **Command:** `node <absolute-path-to-godot-mcp>/build/index.js`
-   
-   Replace `<absolute-path-to-godot-mcp>` with the actual path where you cloned the repository.
-   
-   Example (Windows):
-   ```
-   node D:\tools\godot-mcp\build\index.js
-   ```
-   
-   Example (Mac/Linux):
-   ```
-   node /home/user/tools/godot-mcp/build/index.js
-   ```
+**What was configured:**
+- **Server Name:** `godot`
+- **Type:** `command`
+- **Command:** `node D:\_LOCAL PROJECTS\Gadot\2.5d-fighter\godot-mcp\build\index.js`
 
-4. Save the configuration and restart Cursor if needed.
+**Next Steps:**
+1. **Restart Cursor** to load the new MCP configuration
+2. Verify the setup:
+   - Open Cursor Settings (`Ctrl+,`)
+   - Navigate to `Settings → Features → MCP`
+   - You should see the `godot` server listed and active/enabled
 
-5. Verify the setup:
-   - The MCP server should appear in the MCP servers list
-   - You should be able to see it as active/enabled
+**Manual Configuration (if needed):**
+If you need to configure manually or in a different location:
+1. Open Cursor Settings (`Ctrl+,`)
+2. Navigate to `Settings → Features → MCP`
+3. Click `+ Add New MCP Server`
+4. Fill in:
+   - **Name:** `godot`
+   - **Type:** `command`
+   - **Command:** `node D:\_LOCAL PROJECTS\Gadot\2.5d-fighter\godot-mcp\build\index.js`
 
 ## Step 3: Verify Integration
 
@@ -84,4 +89,5 @@ Once configured, Cursor's AI assistant should be able to:
 
 - GodotMCP GitHub: https://github.com/bradypp/godot-mcp
 - Cursor MCP Documentation: Check Cursor's official documentation for MCP setup
+
 

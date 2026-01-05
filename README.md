@@ -13,8 +13,10 @@ This project uses Godot Engine 4.5 with Forward Plus rendering.
    - Open the project in Godot
 
 2. **Set Up Development Tools**
-   - See [GODOTMCP_SETUP.md](./GODOTMCP_SETUP.md) for AI assistant setup
+   - ✅ **MCP Servers Configured**: GodotMCP and GitHub MCP have been automatically configured
+   - See [GODOTMCP_SETUP.md](./GODOTMCP_SETUP.md) for AI assistant setup details
    - See [GITHUB_SETUP.md](./GITHUB_SETUP.md) for version control setup
+   - **Note**: Restart Cursor to activate the MCP servers
 
 ## Project Structure
 
@@ -40,4 +42,5 @@ This project uses Godot Engine 4.5 with Forward Plus rendering.
 ## License
 
 [Add your license here]
+
 
