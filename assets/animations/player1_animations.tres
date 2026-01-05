@@ -1,0 +1,31 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/character/vr-vandal/vr-randall-sprite.png" id="1_sprite_sheet"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1"]
+atlas = ExtResource("1_sprite_sheet")
+region = Rect2(0, 0, 64, 64)
+
+[resource]
+animations = {
+"idle": {
+"frames": [SubResource("AtlasTexture_1")],
+"loop": true,
+"speed": 5.0
+},
+"walk_left": {
+"frames": [SubResource("AtlasTexture_1")],
+"loop": true,
+"speed": 8.0
+},
+"walk_right": {
+"frames": [SubResource("AtlasTexture_1")],
+"loop": true,
+"speed": 8.0
+},
+"jump": {
+"frames": [SubResource("AtlasTexture_1")],
+"loop": false,
+"speed": 10.0
+}
+}
