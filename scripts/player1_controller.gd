@@ -64,6 +64,11 @@ const POINTS_PER_HIT = 15
 const POINTS_ON_DAMAGE = 5  # Points when taking damage
 const COMBO_MULTIPLIER = 1.5  # Bonus multiplier for chained attacks
 
+# Damage state system
+var is_damaged = false
+var damage_timer = 0.0
+const DAMAGE_DURATION = 0.5  # How long damage state lasts
+
 # Reference to AnimatedSprite3D node
 @onready var animated_sprite = $AnimatedSprite3D
 
@@ -108,6 +113,23 @@ func _physics_process(delta):
 		is_rolling = false
 		# Restore original collision mask when roll ends
 		collision_mask = original_collision_mask
+		# Remove collision exception with opponent
+		if opponent:
+			remove_collision_exception_with(opponent)
+	
+	# Update damage timer
+	if is_damaged:
+		damage_timer -= delta
+		if damage_timer <= 0:
+			# Damage state ended, restore normal color
+			is_damaged = false
+			damage_timer = 0.0
+			if animated_sprite:
+				animated_sprite.modulate = Color.WHITE
+		else:
+			# Smooth color transition (optional - can keep solid red)
+			# For now, keep solid red during damage
+			pass
 	
 	# Attack timeout fallback and chaining
 	if is_attacking:
@@ -152,6 +174,9 @@ func _physics_process(delta):
 			# Set collision mask immediately to pass through opponent (ground only)
 			# This must be done FIRST before any other roll setup
 			collision_mask = GROUND_ONLY_MASK
+			# Add collision exception with opponent to ensure we can roll through
+			if opponent:
+				add_collision_exception_with(opponent)
 			is_rolling = true
 			roll_timer = ROLL_DURATION
 	
@@ -163,8 +188,8 @@ func _physics_process(delta):
 		if Input.is_action_just_pressed("ui_accept") or w_just_pressed:
 			velocity.y = JUMP_VELOCITY
 	
-	# Handle attack inputs (J for punch, K for kick)
-	if not is_rolling:
+	# Handle attack inputs (J for punch, K for kick) - only if not damaged
+	if not is_rolling and not is_damaged:
 		handle_attack_inputs()
 	
 	# Handle projectile shooting (U key)
@@ -218,13 +243,34 @@ func _physics_process(delta):
 			# Lock horizontal position during ground attacks (Street Fighter style)
 			velocity.x = 0.0
 	elif is_rolling:
-		# Ensure collision mask is set to ground only during roll (set every frame to be safe)
-		collision_mask = GROUND_ONLY_MASK
-		# Roll movement
+		# Roll movement - use direct position updates to bypass collision with players
 		var roll_dir = 1.0 if input_dir >= 0 else -1.0
 		if input_dir == 0:
 			roll_dir = 1.0 if animated_sprite.flip_h == false else -1.0
 		velocity.x = roll_dir * ROLL_SPEED
+		
+		# Apply gravity during roll
+		velocity.y -= gravity * delta
+		
+		# Direct position movement to pass through players
+		var movement = velocity * delta
+		global_position += movement
+		
+		# Manual ground collision check and snap to ground
+		var space_state = get_world_3d().direct_space_state
+		var ground_check = PhysicsRayQueryParameters3D.create(
+			global_position + Vector3(0, 0.5, 0),  # Check from player center
+			global_position + Vector3(0, -2.0, 0)   # Check below player
+		)
+		ground_check.collision_mask = 1  # Only check ground layer
+		var ground_result = space_state.intersect_ray(ground_check)
+		
+		if ground_result:
+			# Snap to ground level (player height is 2 units, center at 1 unit)
+			var ground_y = ground_result.position.y + 1.5
+			if global_position.y <= ground_y:
+				global_position.y = ground_y
+				velocity.y = 0.0
 	else:
 		# Normal movement (walk or run)
 		if input_dir:
@@ -242,8 +288,9 @@ func _physics_process(delta):
 	if is_attacking:
 		check_attack_hit()
 	
-	# Move the character
-	move_and_slide()
+	# Move the character (skip if rolling, already moved directly)
+	if not is_rolling:
+		move_and_slide()
 
 func handle_attack_inputs():
 	var j_just_pressed = Input.is_key_pressed(KEY_J) and not was_j_pressed
@@ -390,6 +437,10 @@ func check_attack_hit():
 	
 	# Check if opponent is in attack range
 	if distance <= ATTACK_RANGE:
+		# Check if opponent is rolling (invulnerable)
+		if "is_rolling" in opponent and opponent.is_rolling:
+			return  # Opponent is rolling, no damage
+		
 		# Check if attack animation is in active hit frame (middle portion)
 		var attack_progress = (ATTACK_TIMEOUT - attack_timer) / ATTACK_TIMEOUT
 		if attack_progress >= 0.2 and attack_progress <= 0.8:
@@ -403,6 +454,10 @@ func check_attack_hit():
 			earn_points(points_earned)
 			last_hit_time = current_time
 			
+			# Trigger damage on opponent
+			if opponent.has_method("take_damage"):
+				opponent.take_damage()
+			
 			# Also award points to opponent for taking damage
 			if opponent.has_method("earn_points"):
 				opponent.earn_points(POINTS_ON_DAMAGE)
@@ -410,6 +465,22 @@ func check_attack_hit():
 func earn_points(amount: int):
 	damage_points += amount
 	damage_points = min(damage_points, MAX_POINTS)  # Cap at maximum
+
+func take_damage():
+	# Trigger damage state
+	is_damaged = true
+	damage_timer = DAMAGE_DURATION
+	
+	# Cancel any ongoing attacks
+	if is_attacking:
+		is_attacking = false
+		attack_combo_name = ""
+		attack_timer = 0.0
+		queued_attack = ""
+	
+	# Set red overlay
+	if animated_sprite:
+		animated_sprite.modulate = Color.RED
 
 func update_animation(input_dir: float):
 	if not animated_sprite:

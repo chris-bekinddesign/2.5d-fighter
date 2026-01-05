@@ -52,6 +52,14 @@ func _physics_process(delta):
 func _on_area_body_entered(body):
 	# Check if the body is a player (CharacterBody3D)
 	if body is CharacterBody3D:
+		# Check if player is rolling (invulnerable)
+		if "is_rolling" in body and body.is_rolling:
+			# Player is rolling - projectile passes through
+			return  # Don't damage, don't destroy projectile
+		
+		# Player is not rolling - normal hit
+		if body.has_method("take_damage"):
+			body.take_damage()
 		# Hit a player, destroy projectile
 		queue_free()
 
